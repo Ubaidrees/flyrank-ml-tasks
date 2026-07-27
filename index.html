@@ -272,6 +272,7 @@
     <h2><span class="num">01</span> Introduction</h2>
     <p>Content teams managing large portfolios cannot manually review every page every cycle. A prioritization signal — some ranking of "review this first" — is only useful if it is honest about how much better it is than what a team could already build by hand: a simple, transparent rule based on staleness and click performance.</p>
     <p>This paper documents that comparison directly: a hand-written baseline rule, audited signal by signal, against a trained model, evaluated under a validation design that cannot let the model quietly memorize client-specific patterns. The emphasis throughout is on what the evidence actually supports, not on the most impressive-sounding number available.</p>
+    <p>This lane mirrors a real FlyRank production workflow: internal optimization flags like <code>Fix CTR</code> and <code>Zombie Page</code> already triage content for human review, and FlyRank's own March 2026 research paper found that flagged content often outperforms unflagged content precisely because flags require enough data to diagnose a real issue. That paper's Finding #4 also reported a 3.2x health-score boost from refreshing stale content — a compelling result this project treats as a hypothesis to test honestly from scratch, not a conclusion to assume.</p>
   </section>
 
   <section id="data">

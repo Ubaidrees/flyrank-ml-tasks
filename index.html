@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicting Content Decline: A Client-Grouped Validation Study — Muhammad Ubaid Idrees</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --main:#0A5CFF;
+    --text:#14181F;
+    --bg:#F7F7F4;
+    --accent:#D97706;
+    --line:#E1E1DA;
+    --card:#FFFFFF;
+    --muted:#5B6270;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.65;
+    font-size:16px;
+  }
+  h1,h2,h3,.mono-label{font-family:'Space Grotesk', sans-serif;}
+  .wrap{max-width:820px; margin:0 auto; padding:0 24px;}
+
+  /* ---- Header / hero ---- */
+  header{
+    border-bottom:1px solid var(--line);
+    padding:64px 0 48px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--main);
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .logo-mark{
+    width:20px; height:20px; border-radius:50%;
+    border:2px solid var(--main);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:8px; font-weight:700; color:var(--text);
+    position:relative;
+  }
+  h1.title{
+    font-size:2.5rem;
+    font-weight:700;
+    line-height:1.15;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    font-size:1.05rem;
+    color:var(--muted);
+    max-width:640px;
+    margin:0 0 28px;
+  }
+  .byline{
+    font-size:0.9rem;
+    color:var(--muted);
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .byline a{color:var(--main); text-decoration:none;}
+  .byline a:hover{text-decoration:underline;}
+
+  /* ---- Abstract card ---- */
+  .abstract{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--main);
+    border-radius:8px;
+    padding:28px 30px;
+    margin:36px 0 0;
+  }
+  .abstract .mono-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--main);
+    font-weight:500;
+    margin-bottom:12px;
+    display:block;
+  }
+  .abstract p{margin:0; font-size:0.98rem;}
+
+  /* ---- Sections ---- */
+  section{padding:52px 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  h2{
+    font-size:1.5rem;
+    font-weight:600;
+    margin:0 0 22px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  h2 .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--main);
+    font-weight:500;
+  }
+  h3{font-size:1.05rem; font-weight:600; margin:28px 0 10px;}
+  p{margin:0 0 16px;}
+  ul, ol{padding-left:22px; margin:0 0 16px;}
+  li{margin-bottom:8px;}
+  code{
+    font-family:'IBM Plex Mono', monospace;
+    background:#EFEFEA;
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:0.88em;
+  }
+
+  /* ---- Tag badges (borrowed structural idea from the FlyRank paper's own finding tags) ---- */
+  .tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:0.04em;
+    padding:3px 9px;
+    border-radius:5px;
+    margin-right:8px;
+    vertical-align:middle;
+  }
+  .tag-confirmed{background:#E8F0FF; color:var(--main);}
+  .tag-mixed{background:#FDF1DE; color:var(--accent);}
+  .tag-fixed{background:#EAF6EC; color:#1E7B34;}
+  .tag-caution{background:#FBE9E9; color:#B3261E;}
+
+  /* ---- Tables ---- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:18px 0 22px;
+    font-size:0.92rem;
+  }
+  th, td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  th{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--muted);
+    font-weight:500;
+  }
+  tr.highlight td{background:#F5F9FF;}
+  td.num, th.num{font-family:'IBM Plex Mono', monospace; text-align:right;}
+
+  /* ---- Bar chart (self-contained SVG, no external image dependency) ---- */
+  .chart-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px 26px;
+    margin:20px 0;
+  }
+  .chart-title{font-size:0.85rem; font-weight:600; margin-bottom:16px; color:var(--muted);}
+  .bar-row{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
+  .bar-label{width:190px; font-size:0.85rem; flex-shrink:0;}
+  .bar-track{flex:1; background:#EEEEE8; border-radius:4px; height:26px; position:relative; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:4px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;}
+  .bar-fill span{font-family:'IBM Plex Mono', monospace; font-size:12px; color:white; font-weight:500;}
+  .bar-fill.main{background:var(--main);}
+  .bar-fill.muted{background:#B7B7AE;}
+  .bar-fill.caution{background:#C24C3B;}
+
+  figure{margin:20px 0;}
+  figure img{width:100%; border-radius:8px; border:1px solid var(--line); display:block;}
+  figcaption{font-size:0.85rem; color:var(--muted); margin-top:8px;}
+
+  /* ---- Limitations list style ---- */
+  .limit-item{
+    display:flex; gap:14px; margin-bottom:18px; align-items:flex-start;
+  }
+  .limit-marker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--accent); font-weight:600;
+    padding-top:3px; flex-shrink:0; width:20px;
+  }
+
+  /* ---- Recommendations ---- */
+  .rec-card{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    background:var(--card);
+  }
+  .rec-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+  .rec-code{font-family:'IBM Plex Mono', monospace; font-size:0.85rem; font-weight:600;}
+  .rec-count{font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--muted);}
+  .rec-desc{font-size:0.9rem; color:var(--muted); margin:0;}
+
+  .nogo-box{
+    background:#FBE9E9;
+    border:1px solid #F0C6C2;
+    border-radius:8px;
+    padding:20px 22px;
+    margin-top:24px;
+  }
+  .nogo-box h3{margin-top:0; color:#B3261E;}
+
+  /* ---- Footer / acknowledgments ---- */
+  footer{padding:48px 0 64px;}
+  .credit-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px 26px;
+    text-align:center;
+  }
+  .credit-box a{color:var(--main); font-weight:600; text-decoration:none;}
+  .credit-box a:hover{text-decoration:underline;}
+  .repo-links{margin-top:24px; font-size:0.9rem;}
+  .repo-links a{color:var(--main); text-decoration:none;}
+  .repo-links a:hover{text-decoration:underline;}
+  .repo-links li{list-style:none; padding:0;}
+  .repo-links ul{padding:0;}
+
+  @media (max-width:600px){
+    h1.title{font-size:1.9rem;}
+    .bar-label{width:120px; font-size:0.78rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="logo-mark">UI</span>
+      FLYRANK ML INTERNSHIP · CAPSTONE RESEARCH PAPER
+    </div>
+    <h1 class="title">Predicting Content Decline: An Honest-Validation Case Study</h1>
+    <p class="subtitle">What happens when a real model is checked against a real baseline, on a split that can't cheat — and what breaks along the way when the data itself is checked just as hard.</p>
+    <div class="byline">
+      <span>Muhammad Ubaid Idrees</span>
+      <a href="https://github.com/Ubaidrees/flyrank-ml-tasks" target="_blank">Repository ↗</a>
+      <a href="https://flyrank.ai" target="_blank">Data: FlyRank ML Internship ↗</a>
+    </div>
+
+    <div class="abstract">
+      <span class="mono-label">Abstract</span>
+      <p>This study asks whether search-performance signals — impressions, ranking position, click-through rate, and content freshness — can predict which pages are likely to decline in visibility, well enough to prioritize a content team's limited review capacity. A Random Forest classifier was trained on 30,000 real content records from the FlyRank ML Internship dataset, using twelve portfolio-level features, and compared against a hand-audited baseline rule under a client-grouped validation split that holds entire client portfolios out of training. Two real data-quality issues were found and corrected during the audit before any result was trusted: a click-through-rate unit-scale bug affecting 1,689 rows, and a bulk-update artifact distorting freshness signals for 55.8% of all rows. Under the honest, client-grouped split the model reached an AUC of 0.604; a naive split that allowed client overlap would have overstated this by fourteen points (AUC 0.745), a gap treated here as a finding in its own right rather than a footnote. The result is a modest, real, decision-support signal — not a high-confidence prediction — packaged into a ranked, reason-coded action queue with explicit human-review and no-go rules.</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="intro">
+    <h2><span class="num">01</span> Introduction</h2>
+    <p>Content teams managing large portfolios cannot manually review every page every cycle. A prioritization signal — some ranking of "review this first" — is only useful if it is honest about how much better it is than what a team could already build by hand: a simple, transparent rule based on staleness and click performance.</p>
+    <p>This paper documents that comparison directly: a hand-written baseline rule, audited signal by signal, against a trained model, evaluated under a validation design that cannot let the model quietly memorize client-specific patterns. The emphasis throughout is on what the evidence actually supports, not on the most impressive-sounding number available.</p>
+  </section>
+
+  <section id="data">
+    <h2><span class="num">02</span> Data</h2>
+    <p>This work uses the FlyRank ML Internship starter release (<code>content_refresh_anonymized.csv</code>), a single historical snapshot of portfolio-level content performance. After filtering to active content — <code>impressions_90d &gt; 0</code> and <code>content_age_days &gt;= 90</code> (excluding pages too new to have a meaningful trend) and removing duplicate content IDs — <strong>30,000 rows</strong> remained for analysis.</p>
+    <p>Earlier stages of this project also queried the full FlyRank internship warehouse (a Hugging Face–hosted release spanning ~79 million daily performance rows across 104 anonymized clients) to verify data-contract assumptions — grain, availability, and tracking-start dates — before settling on the vetted starter release for modeling, for tractability within the project timeline.</p>
+    <p><strong>Excluded by design:</strong> rows from clients without confirmed search/analytics tracking access; content younger than 90 days (insufficient history for a trend label); any row-level client names, raw URLs, or private query text — all identifiers in this dataset and paper are anonymized hashes.</p>
+  </section>
+
+  <section id="methodology">
+    <h2><span class="num">03</span> Methodology</h2>
+
+    <h3>Label definition</h3>
+    <p><code>is_declining_label = 1</code> if <code>trend_direction == "down"</code>, where trend direction is defined (per FlyRank's own published methodology) as a &gt;10% decline in impressions over the trailing 30 days versus the prior 30 days.</p>
+
+    <h3>Features</h3>
+    <p>Twelve portfolio-level features were used: <code>impressions_90d</code>, <code>clicks_90d</code>, <code>sessions_90d</code>, <code>ai_sessions_90d</code>, <code>content_age_days</code>, <code>days_since_last_update</code>, <code>ctr</code>, <code>avg_position</code>, <code>engagement_rate</code>, <code>scroll_rate</code>, <code>word_count</code>, <code>ai_traffic_pct</code>.</p>
+
+    <h3>Baseline rule <span class="tag tag-mixed">AUDITED</span></h3>
+    <p>Reason code <code>stale_page_ctr_gap</code>: flags content where <code>days_since_last_update &gt;= 180</code>, <code>impressions_90d &gt;= 500</code>, <code>0 &lt; avg_position &lt;= 20</code>, and <code>ctr &lt; 0.5</code>. Before use, both signals behind this rule were independently verified:</p>
+    <ul>
+      <li><span class="tag tag-mixed">MIXED</span> Staleness vs. decline rate rose from 51.2% (n=20,655, &lt;90 days) to 61.1% (n=9,171, 90–180 days) — but reversed to 47.1% (n=174, 180+ days), a real pattern, not sampling noise. Likely explanation: the most stale content may have already bottomed out.</li>
+      <li><span class="tag tag-confirmed">CONFIRMED</span> CTR by position tier, after a data-quality fix (see Limitations): median CTR at position 20+ (0.08) is roughly half that of the 11–20 tier (0.17), confirming the expected relationship once low-volume outliers were filtered.</li>
+    </ul>
+
+    <h3>Validation design</h3>
+    <p>A <strong>client-grouped split</strong> (80/20, <code>GroupShuffleSplit</code>) was used, guaranteeing zero client overlap between training and test sets — verified directly, not assumed. This directly addresses a risk surfaced in the baseline audit, where one client accounted for 6 of the top 10 flagged pages.</p>
+
+    <h3>Leakage audit <span class="tag tag-caution">FOUND &amp; QUANTIFIED</span></h3>
+    <p><code>impressions_90d</code> structurally overlaps the label's own 30-day definition window. Removing it dropped AUC from 0.604 to 0.551 — confirming partial, not total, leakage: the remaining 0.551 is still real signal from the other eleven features. The model was also confirmed to use no future-window or internal product-computed fields (e.g. FlyRank's own health score or optimization flags) as inputs.</p>
+  </section>
+
+  <section id="results">
+    <h2><span class="num">04</span> Results</h2>
+
+    <div class="chart-card">
+      <div class="chart-title">Model AUC — honest split vs. naive split (same model, same data)</div>
+      <div class="bar-row">
+        <div class="bar-label">Client-grouped (honest)</div>
+        <div class="bar-track"><div class="bar-fill main" style="width:60.4%"><span>0.604</span></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Naive random split</div>
+        <div class="bar-track"><div class="bar-fill caution" style="width:74.5%"><span>0.745 — inflated</span></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Without impressions_90d</div>
+        <div class="bar-track"><div class="bar-fill muted" style="width:55.1%"><span>0.551</span></div></div>
+      </div>
+    </div>
+    <p>The naive split showed <strong>31 of 31 test clients also present in training</strong> — complete overlap, not partial — and overstated AUC by 0.141. This gap is reported here as a primary finding: validation design changed the measured result more than any feature-engineering choice in this project did.</p>
+
+    <h3>Baseline vs. model</h3>
+    <table>
+      <tr><th>Method</th><th class="num">Flagged (of 30,000)</th><th class="num">Precision on flagged set</th></tr>
+      <tr><td>Baseline rule (<code>stale_page_ctr_gap</code>)</td><td class="num">10</td><td class="num">directional only — too narrow to score reliably at any fixed budget</td></tr>
+      <tr class="highlight"><td>Random Forest (client-grouped)</td><td class="num">30,000 (ranked)</td><td class="num">AUC 0.604</td></tr>
+    </table>
+    <p>The baseline's extreme selectivity (0.03% of the portfolio) is itself an honest finding: a rule this narrow is safe but likely under-covers real opportunities, which is the practical argument for a ranked model output alongside it, not in place of it.</p>
+
+    <h3>Error analysis</h3>
+    <p>On the held-out test set: 1,281 false negatives (missed declines) and 1,308 false positives (flagged non-declines) — a roughly balanced error profile, with no strong systematic bias toward either error type at the default 0.5 threshold.</p>
+
+    <figure>
+      <img src="work/figures/feature_importance.png" alt="Permutation feature importance bar chart">
+      <figcaption>Feature importance (permutation-based). <code>impressions_90d</code> ranks highest but is confirmed partially leaky (see Methodology); <code>avg_position</code> and <code>content_age_days</code> follow as more independently trustworthy signals.</figcaption>
+    </figure>
+  </section>
+
+  <section id="limitations">
+    <h2><span class="num">05</span> Limitations &amp; Honest Framing</h2>
+
+    <div class="limit-item">
+      <div class="limit-marker">01</div>
+      <p><strong>Single historical snapshot.</strong> This dataset represents one point in time for one portfolio collection; findings are not validated across seasons, industries, or content types beyond what's represented here.</p>
+    </div>
+    <div class="limit-item">
+      <div class="limit-marker">02</div>
+      <p><strong>Bulk-update artifact <span class="tag tag-fixed">FOUND &amp; FLAGGED</span>.</strong> A systematic check found 23 clients (55.8% of all rows) show a near-uniform <code>days_since_last_update</code> value — almost certainly a migration or mass-republish date, not genuine editorial activity. Bulk-event rows show a modestly higher decline rate (56.3% vs. 51.6%) than unaffected rows; every row is tagged with a <code>bulk_event_flag</code> so this can be excluded or controlled for in any downstream use.</p>
+    </div>
+    <div class="limit-item">
+      <div class="limit-marker">03</div>
+      <p><strong>CTR unit-scale bug <span class="tag tag-fixed">FIXED</span>.</strong> 1,689 rows stored click-through rate on a 0–100 scale instead of 0–1 (confirmed by cross-checking against raw <code>clicks_90d</code>/<code>impressions_90d</code>), producing mathematically impossible values above 1.0. All CTR values were recomputed directly from raw clicks and impressions before scoring.</p>
+    </div>
+    <div class="limit-item">
+      <div class="limit-marker">04</div>
+      <p><strong>Non-monotonic staleness signal.</strong> Staleness predicts decline up to ~180 days, then reverses for more extreme staleness — likely because heavily stale content has already bottomed out. The rule and model may both under-flag the most extreme staleness cases as a result.</p>
+    </div>
+    <div class="limit-item">
+      <div class="limit-marker">05</div>
+      <p><strong>Partial feature leakage.</strong> <code>impressions_90d</code> contributes some predictive power via structural overlap with the label's own definition window (a 0.053 AUC contribution) — real signal remains without it, but this should be disclosed alongside any feature-importance ranking.</p>
+    </div>
+    <div class="limit-item">
+      <div class="limit-marker">06</div>
+      <p><strong>Not validated for new clients.</strong> The client-grouped split evaluates generalization across established clients only; performance on a brand-new client with no historical data in this dataset is untested.</p>
+    </div>
+  </section>
+
+  <section id="recommendations">
+    <h2><span class="num">06</span> Ranked Recommendations</h2>
+    <p>Every scored page receives exactly one reason code and one recommended action, intended as decision-support for a human content team — not an automated action system.</p>
+
+    <div class="rec-card">
+      <div class="rec-header"><span class="rec-code">stale_page_ctr_gap</span><span class="rec-count">10 rows</span></div>
+      <p class="rec-desc">Action: <strong>review_for_refresh.</strong> The audited baseline rule's own flags — highest confidence, smallest set.</p>
+    </div>
+    <div class="rec-card">
+      <div class="rec-header"><span class="rec-code">high_volume_risk</span><span class="rec-count">3,201 rows</span></div>
+      <p class="rec-desc">Action: <strong>priority_review.</strong> High-impression pages the model scores as at-risk — largest potential upside if the review is correct.</p>
+    </div>
+    <div class="rec-card">
+      <div class="rec-header"><span class="rec-code">low_ctr_visible_page</span><span class="rec-count">9,655 rows</span></div>
+      <p class="rec-desc">Action: <strong>review_snippet_ctr.</strong> Visible, ranked pages underperforming on clicks relative to their position tier.</p>
+    </div>
+    <div class="rec-card">
+      <div class="rec-header"><span class="rec-code">stale_needs_review</span><span class="rec-count">161 rows</span></div>
+      <p class="rec-desc">Action: <strong>review_for_refresh.</strong> Stale but not yet meeting the full baseline rule's threshold.</p>
+    </div>
+    <div class="rec-card">
+      <div class="rec-header"><span class="rec-code">general_monitor</span><span class="rec-count">16,973 rows</span></div>
+      <p class="rec-desc">Action: <strong>monitor_only.</strong> No specific evidence for action at this time.</p>
+    </div>
+
+    <div class="nogo-box">
+      <h3>No-go — never automate these</h3>
+      <ul>
+        <li>Never auto-publish, auto-delete, or auto-redirect a page based on this score alone.</li>
+        <li>Never apply this queue to legal, medical, financial, or other YMYL content without senior editorial and subject-matter review, regardless of score.</li>
+        <li>Never treat <code>risk_score</code> as a per-page guarantee — it is a portfolio-ranking signal (AUC 0.604), not a certainty for any individual page.</li>
+        <li>Never act on a <code>stale_*</code> reason code for any row with <code>bulk_event_flag = true</code> without manually confirming the page's real last-edit date first.</li>
+        <li>Never apply this model to a brand-new client with no historical data — it was validated on established clients only.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="reproducibility">
+    <h2><span class="num">07</span> Reproducibility</h2>
+    <p>Every number in this paper traces back to an executed, committed notebook in the public repository below. No client names, raw URLs, or private query text appear anywhere in this paper or its source notebooks.</p>
+    <ul class="repo-links">
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks" target="_blank">→ Full repository</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/w03_data_contract.ipynb" target="_blank">→ Data contract &amp; verification (Week 3)</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/w04_baseline_score.ipynb" target="_blank">→ Signal audit &amp; baseline rule (Week 4)</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/w05_model.ipynb" target="_blank">→ Model training &amp; comparison (Week 5)</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/w06_validation_audit.ipynb" target="_blank">→ Validation audit &amp; claim rewrite (Week 6)</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/w07_action_playbook.ipynb" target="_blank">→ Action playbook &amp; data-quality fixes (Week 7)</a></li>
+      <li><a href="https://github.com/Ubaidrees/flyrank-ml-tasks/blob/main/work/notebooks/capstone.ipynb" target="_blank">→ Capstone summary notebook</a></li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="credit-box">
+      <p style="margin-bottom:6px;">Built on the FlyRank ML Internship dataset.</p>
+      <a href="https://flyrank.ai" target="_blank">flyrank.ai ↗</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
